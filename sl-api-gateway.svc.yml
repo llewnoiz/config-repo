@@ -1,0 +1,573 @@
+server:
+  port: 8112
+  tomcat:
+    max-http-form-post-size: 100MB
+
+spring:
+  application:
+    name: sl-api-gateway
+  messages:
+    cache-duration: -1
+    basename: classpath:/i18n/messages
+    encoding: UTF-8
+  cache:
+    type: NONE
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+logging:
+  level:
+    jdbc.connection: OFF
+    jdbc.sqlonly: DEBUG
+    org.springframework.web: ERROR
+    com.sktelecom.cmkp: DEBUG
+    com.zaxxer.hikari.HikariDataSource: ERROR
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  health:
+    defaults:
+      enabled: false
+
+---
+####################################################################################
+# Dev 환경
+spring:
+  profiles: dev
+
+eureka:
+  client:
+    enabled: false
+
+ribbon:
+  eureka:
+    enabled: false
+  NIWSServerListClassName: com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
+  ConnectTimeout: 120000
+  ReadTimeout: 120000
+  MaxTotalHttpConnections: 500
+  MaxConnectionsPerHost: 500
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: THREAD
+          thread:
+            timeoutInMilliseconds: 480000
+
+httpSecurity:
+  configuration:
+    permitAllurls:
+      - "/a/**"
+      - "/c/**"
+      - "/s/**"
+      - "/o/**"
+      #- "/b/**"
+      - "/l/**"
+      - "/la/**"
+      - "/**/swagger-ui.html"
+      - "/**/swagger/**"
+      - "/**/swagger-resources/**"
+    ignoreJwtValidUrls:
+      - "/a/**"
+      - "/b/**"
+    # permitTempurls:
+    jwkProviderUrl: "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_qB5flVYLu"
+    apiRoleCheck: true
+    frameOptions: false
+
+cors:
+  configuration:
+    allowed:
+      origins:
+        - "*"
+      methods:
+        - "*"
+      headers:
+        - "*"
+      credentials: true
+      maxAge: 3600
+
+zuul:
+  ribbonIsolationStrategy: THREAD
+  threadPool:
+    useSeparateThreadPools: true
+  management:
+    port: 8083
+  ignored-services: "*"
+  ignored-headers: Access-Control-Allow-Origin
+  sensitiveHeaders:
+  routes:
+    CMKP-ADMIN-API:
+      path: /a/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-dev-cmkp-int-alb-ecs-1631202224.ap-northeast-2.elb.amazonaws.com:8102
+      stripPrefix: true
+    CMKP-OPEN-API:
+      path: /o/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-dev-cmkp-int-alb-ecs-1631202224.ap-northeast-2.elb.amazonaws.com:8102
+      stripPrefix: true
+    CMKP-CUSTOMER-API:
+      path: /c/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-dev-cmkp-int-alb-ecs-1631202224.ap-northeast-2.elb.amazonaws.com:8103
+      stripPrefix: true
+    CMKP-SELLER-API:
+      path: /s/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-dev-cmkp-int-alb-ecs-1631202224.ap-northeast-2.elb.amazonaws.com:8104
+      stripPrefix: true
+    #CMKP-BATCH-API:
+    #  path: /b/**
+    #  sensitiveHeaders:
+    #  url: http://internal-skt-an2-dev-cmkp-int-alb-ecs-1631202224.ap-northeast-2.elb.amazonaws.com:8106
+    #  stripPrefix: true
+    CMKP-LAUNCHER-API:
+      path: /l/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-dev-cmkp-int-alb-ecs-1631202224.ap-northeast-2.elb.amazonaws.com:8109
+      stripPrefix: true
+    CMKP-LAUNCHERADMIN-API:
+      path: /la/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-dev-cmkp-int-alb-ecs-1631202224.ap-northeast-2.elb.amazonaws.com:8111
+      stripPrefix: true
+  host:
+    socket-timeout-millis: 120000
+    connect-timeout-millis: 120000
+
+redis:
+  enabled: true
+  host: skt-an2-dev-cmkp-redis.h8bfsj.0001.apn2.cache.amazonaws.com
+  port: 6379
+
+
+---
+####################################################################################
+# Stg 환경
+spring:
+  profiles: stg
+
+eureka:
+  client:
+    enabled: false
+
+ribbon:
+  eureka:
+    enabled: false
+  NIWSServerListClassName: com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
+  ConnectTimeout: 120000
+  ReadTimeout: 120000
+  MaxTotalHttpConnections: 500
+  MaxConnectionsPerHost: 500
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: THREAD
+          thread:
+            timeoutInMilliseconds: 480000
+
+httpSecurity:
+  configuration:
+    permitAllurls:
+      - "/a/**"
+      - "/c/**"
+      - "/s/**"
+      - "/o/**"
+      #- "/b/**"
+      - "/l/**"
+      - "/la/**"
+      - "/**/swagger-ui.html"
+      - "/**/swagger/**"
+      - "/**/swagger-resources/**"
+    ignoreJwtValidUrls:
+      - "/a/**"
+      - "/b/**"
+    # permitTempurls:
+    jwkProviderUrl: "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_S35iqwyud"
+    apiRoleCheck: true
+    frameOptions: false
+
+cors:
+  configuration:
+    allowed:
+      origins:
+        - "*"
+      methods:
+        - "*"
+      headers:
+        - "*"
+      credentials: true
+      maxAge: 3600
+
+zuul:
+  ribbonIsolationStrategy: THREAD
+  threadPool:
+    useSeparateThreadPools: true
+  management:
+    port: 8083
+  ignored-services: "*"
+  ignored-headers: Access-Control-Allow-Origin
+  sensitiveHeaders:
+  routes:
+    CMKP-ADMIN-API:
+      path: /a/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-stg-cmkp-int-alb-ecs-973260146.ap-northeast-2.elb.amazonaws.com:8102
+      stripPrefix: true
+    CMKP-OPEN-API:
+      path: /o/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-stg-cmkp-int-alb-ecs-973260146.ap-northeast-2.elb.amazonaws.com:8102
+      stripPrefix: true
+    CMKP-CUSTOMER-API:
+      path: /c/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-stg-cmkp-int-alb-ecs-973260146.ap-northeast-2.elb.amazonaws.com:8103
+      stripPrefix: true
+    CMKP-SELLER-API:
+      path: /s/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-stg-cmkp-int-alb-ecs-973260146.ap-northeast-2.elb.amazonaws.com:8104
+      stripPrefix: true
+    #CMKP-BATCH-API:
+    #  path: /b/**
+    #  sensitiveHeaders:
+    #  url: http://internal-skt-an2-stg-cmkp-int-alb-ecs-973260146.ap-northeast-2.elb.amazonaws.com:8106
+    #  stripPrefix: true
+      CMKP-LAUNCHER-API:
+        path: /l/**
+        sensitiveHeaders:
+        url: http://internal-skt-an2-stg-cmkp-int-alb-ecs-973260146.ap-northeast-2.elb.amazonaws.com:8109
+        stripPrefix: true
+      CMKP-LAUNCHERADMIN-API:
+        path: /la/**
+        sensitiveHeaders:
+        url: http://internal-skt-an2-stg-cmkp-int-alb-ecs-973260146.ap-northeast-2.elb.amazonaws.com:8111
+        stripPrefix: true
+  host:
+    socket-timeout-millis: 120000
+    connect-timeout-millis: 120000
+
+redis:
+  enabled: true
+  host: skt-an2-stg-cmkp-redis.enumym.ng.0001.apn2.cache.amazonaws.com
+  port: 6379
+
+---
+####################################################################################
+# Prd 환경
+spring:
+  profiles: prd
+
+eureka:
+  client:
+    enabled: false
+
+ribbon:
+  eureka:
+    enabled: false
+  NIWSServerListClassName: com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
+  ConnectTimeout: 120000
+  ReadTimeout: 120000
+  MaxTotalHttpConnections: 500
+  MaxConnectionsPerHost: 500
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: THREAD
+          thread:
+            timeoutInMilliseconds: 480000
+
+httpSecurity:
+  configuration:
+    permitAllurls:
+      - "/a/**"
+      - "/c/**"
+      - "/s/**"
+      - "/o/**"
+      #- "/b/**"
+      - "/l/**"
+      - "/la/**"
+      - "/**/swagger-ui.html"
+      - "/**/swagger/**"
+      - "/**/swagger-resources/**"
+    ignoreJwtValidUrls:
+      - "/a/**"
+      - "/b/**"
+    # permitTempurls:
+    jwkProviderUrl: "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_4N6CVf6TF"
+    apiRoleCheck: true
+    frameOptions: false
+
+cors:
+  configuration:
+    allowed:
+      origins:
+        - "*"
+      methods:
+        - "*"
+      headers:
+        - "*"
+      credentials: true
+      maxAge: 3600
+
+zuul:
+  ribbonIsolationStrategy: THREAD
+  threadPool:
+    useSeparateThreadPools: true
+  management:
+    port: 8183
+  ignored-services: "*"
+  ignored-headers: Access-Control-Allow-Origin
+  sensitiveHeaders:
+  routes:
+    # CMKP-ADMIN-API:
+    #   path: /a/**
+    #   sensitiveHeaders:
+    #   url: http://int-alb.csl.sktenterprise.com8102
+    #   stripPrefix: true
+    # CMKP-OPEN-API:
+    #   path: /o/**
+    #   sensitiveHeaders:
+    #   url: http://int-alb.csl.sktenterprise.com8102
+    #   stripPrefix: true
+    # CMKP-CUSTOMER-API:
+    #   path: /c/**
+    #   sensitiveHeaders:
+    #   url: http://int-alb.csl.sktenterprise.com8103
+    #   stripPrefix: true
+    # CMKP-SELLER-API:
+    #   path: /s/**
+    #   sensitiveHeaders:
+    #   url: http://int-alb.csl.sktenterprise.com8104
+    #   stripPrefix: true
+    #CMKP-BATCH-API:
+    #  path: /b/**
+    #  sensitiveHeaders:
+    #  url: http://int-alb.csl.sktenterprise.com8106
+    #  stripPrefix: true
+    # CMKP-INTERFACE-API:
+    #   path: /i/**
+    #   sensitiveHeaders:
+    #   url: http://int-alb.csl.sktenterprise.com:8112
+    #   stripPrefix: true
+    CMKP-LAUNCHER-API:
+      path: /l/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-prd-sl-int-alb-ecs-1151765909.ap-northeast-2.elb.amazonaws.com:8109
+      stripPrefix: true
+    CMKP-LAUNCHERADMIN-API:
+      path: /la/**
+      sensitiveHeaders:
+      url: http://internal-skt-an2-prd-sl-int-alb-ecs-1151765909.ap-northeast-2.elb.amazonaws.com:8111
+      stripPrefix: true
+  host:
+    socket-timeout-millis: 120000
+    connect-timeout-millis: 120000
+
+redis:
+  enabled: true
+  host: skt-an2-prd-cmkp-redis.snp7fj.ng.0001.apn2.cache.amazonaws.com
+  port: 6379
+
+
+---
+####################################################################################
+# Loc 환경
+spring:
+  profiles: loc
+
+eureka:
+  client:
+    enabled: false
+
+ribbon:
+  eureka:
+    enabled: true
+  NIWSServerListClassName: com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
+  ConnectTimeout: 120000
+  ReadTimeout: 120000
+  MaxTotalHttpConnections: 500
+  MaxConnectionsPerHost: 500
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: THREAD
+          thread:
+            timeoutInMilliseconds: 480000
+
+httpSecurity:
+  configuration:
+    permitAllurls:
+      #- "/a/**"
+      #- "/c/**"
+      #- "/s/**"
+      - "/a/"
+      - "/c/"
+      - "/s/"
+      - "/o/**"
+      - "/*/login"
+      - "/*/logout"
+      - "/c/products/**"
+      - "/c/curr/products/**"
+      - "/c/banners/**"
+      - "/s/products/image/**"
+      - "/s/products/files/**"
+      - "/s/products/mnl/**"
+      # 20201210 /s/users 추가
+      - "/s/users"
+      - "/s/users/verify"
+      - "/s/users/find-id"
+      - "/s/users/send-chng-pwd"
+      - "/s/users/chng-pwd/mail"
+      - "/s/users/chng-pwd/valid"
+      - "/**/csrf"
+      - "/**/swagger-ui.html"
+      - "/**/swagger/**"
+      - "/**/swagger-resources/**"
+      - "/**/springfox-swagger-ui/**"
+      # 20201216 추가
+      - "/c/board/faq"
+      - "/c/board/notice"
+      - "/c/board/**"
+      - "/s/board/faq"
+      - "/s/board/notice"
+      - "/s/board/**"
+      - "/s/users/confirm"
+      - "/s/users/verify-pwd"
+      - "/s/users/**/chng-id"
+      - "/s/users/**/chng-pwd"
+      - "/s/users/**/chng-id/verify"
+      - "/s/users/resend-cfmr"
+      - "/s/codes/**"
+      - "/c/codes/**"
+      - "/a/codes/**"
+      # 20201216 개발용 임시 Url 추가
+      - "/s/users/unlock"
+      - "/s/users/extra-inf"
+      - "/s/oauth/cognito"
+      # 20201218 customer 추가
+      - "/c/users"
+      - "/c/users/extra-inf"
+      - "/c/users/verify"
+      - "/c/users/confirm"
+      - "/c/users/find-id"
+      - "/c/users/send-chng-pwd"
+      - "/c/users/chng-pwd/mail"
+      - "/c/users/chng-pwd/valid"
+      - "/c/oauth/cognito"
+      - "/s/oauth/cognito"
+      # 20201224 판매자등록>양식 다운로드 Url 추가
+      - "/s/sellers/example"
+      # 20201228 판매자등록>우편번호 url 추가
+      - "/s/getAddr"
+      # 20201230 판매자등록 > 파일 다운로드 url 추가
+      - "/a/seller/atcmtDownload"
+      - "/a/bizOffer/atcmtDownload"
+      # 20210112 batch Test 경로 추가
+      #- "/b/**"
+      # 20210115 customer 포털 + 20210323 Customer Main 전체 허용의 변경
+      - "/c/main/**"
+      # - "/c/main/notice"
+      # 20210129 seller 포털 상품등록양식 다운로드 url 추가
+      - "/s/seller/guide/files/example"
+      # 20210318 약관 다운로드 url 추가
+      - "/c/products/termsDownload"
+      - "/a/board/atcmtDownload"
+      - "/s/board/atcmtDownload"
+      - "/c/board/atcmtDownload"
+      - "/a/products/atcmtDownload"
+      - "/s/products/atcmtDownload"
+      - "/l/**"
+      - "/la/**"
+    ignoreJwtValidUrls:
+      - "/a/**"
+      - "/b/**"
+    # permitTempurls:
+    jwkProviderUrl: "https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_qB5flVYLu" 
+    apiRoleCheck: true
+    frameOptions: false
+
+cors:
+  configuration:
+    allowed:
+      origins:
+        - "*"
+      methods:
+        - "*"
+      headers:
+        - "*"
+      credentials: true
+      maxAge: 3600
+
+zuul:
+  ribbonIsolationStrategy: THREAD
+  threadPool:
+    useSeparateThreadPools: true
+  management:
+    port: 8083
+  ignored-services: "*"
+  ignored-headers: Access-Control-Allow-Origin
+  sensitiveHeaders:
+  routes:
+    CMKP-ADMIN-API:
+      path: /a/**
+      sensitiveHeaders:
+      url: http://cmkp.starlabs.co.kr:8102
+      stripPrefix: true
+    CMKP-OPEN-API:
+      path: /o/**
+      sensitiveHeaders:
+      url: http://cmkp.starlabs.co.kr:8102
+      stripPrefix: true
+    CMKP-CUSTOMER-API:
+      path: /c/**
+      sensitiveHeaders:
+      url: http://cmkp.starlabs.co.kr:8103
+      stripPrefix: true
+    CMKP-SELLER-API:
+      path: /s/**
+      sensitiveHeaders:
+      url: http://cmkp.starlabs.co.kr:8104
+      stripPrefix: true
+    #CMKP-BATCH-API:
+    #  path: /b/**
+    #  sensitiveHeaders:
+    #  url: http://cmkp.starlabs.co.kr:8106
+    #  stripPrefix: true
+    CMKP-LAUNCHER-API:
+      path: /l/**
+      sensitiveHeaders:
+      url: http://cmkp.starlabs.co.kr:8109
+      stripPrefix: true
+    CMKP-LAUNCHERADMIN-API:
+      path: /la/**
+      sensitiveHeaders:
+      url: http://cmkp.starlabs.co.kr:8111
+      stripPrefix: true
+  host:
+    socket-timeout-millis: 120000
+    connect-timeout-millis: 120000
+
+redis:
+  enabled: true
+  host: 127.0.0.1
+  port: 6379
